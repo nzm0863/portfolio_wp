@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nakamura</title>
+    <meta
+      name="description"
+      content="Nakamuraのポートフォリオ。Web制作やデザインの実績、スキルセット、プロフィールをまとめています。"
+    />
+    <link rel="icon" href="img/favicon.ico" id="favicon" />
+    <link rel="stylesheet" href="styles/sanitize.css" />
+    <link rel="stylesheet" href="styles/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Serif+JP:wght@200..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="js/vue.global.prod.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/messages_ja.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#contact_form").validate({
+          errorPlacement: function (error, element) {
+            // thの直後にエラーを表示
+            if (window.matchMedia("(max-width: 768px)").matches) {
+              // レスポンシブ時（スマホ表示時）はthの直後にエラー
+              var th = element.closest("td").prev("th");
+              if (th.length) {
+                error.insertAfter(th);
+              } else {
+                error.insertAfter(element);
+              }
+            } else {
+              // PC時は通常通り（例：inputの直後など）
+              if (element.is(":radio")) {
+                error.insertAfter(element.closest(".radio-group"));
+              } else {
+                error.insertAfter(element);
+              }
+            }
+          },
+        });
+      });
+    </script>
+    <style>
+      .error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="hero">
+        <header>
+          <div class="header_wrap">
+            <h1 id="headline"><a href="/">Nakamura</a></h1>
+            <nav class="nav-pc" :class="{ open: navOpen }">
+              <ul>
+                <li id="header-home"><a href="/">Home</a></li>
+                <li id="header-works"><a href="#works">Works</a></li>
+                <li id="header-skill"><a href="#skill">Skill</a></li>
+                <li id="header-about"><a href="#about">About</a></li>
+                <li id="header-contact"><a href="#contact">Contact</a></li>
+              </ul>
+            </nav>
+            <!-- ハンバーガー -->
+            <div
+              class="hamburger"
+              :class="{ active: navOpen }"
+              @click="navOpen = !navOpen"
+            >
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <nav class="nav-sp" :class="{ open: navOpen }">
+              <ul>
+                <li><a href="/" @click="navOpen = false">Home</a></li>
+                <li><a href="#works" @click="navOpen = false">Works</a></li>
+                <li><a href="#skill" @click="navOpen = false">Skill</a></li>
+                <li><a href="#about" @click="navOpen = false">About</a></li>
+                <li><a href="#contact" @click="navOpen = false">Contact</a></li>
+              </ul>
+            </nav>
+          </div>
+        </header>
+        <h2>Portfolio</h2>
+        <div class="video-container">
+          <video
+            playsinline
+            autoplay
+            loop
+            muted
+            preload="auto"
+            :src="videoSources[currentVideoIndex]"
+            :class="{ fade: isFading }"
+          ></video>
+        </div>
+      </div>
+
+      <section class="works">
+        <h2 class="works-headline" id="works">Works</h2>
+        <ul class="works-items">
+          <li class="works-item" v-for="work in works" :key="work.id">
+            <a v-if="work.work_link" :href="work.work_link" target="_blank" rel="noopener noreferrer">
+              <img
+                v-if="work.featured_media_url"
+                :src="work.featured_media_url"
+                :alt="work.title.rendered"
+              />
+            </a>
+            <img
+              v-else-if="work.featured_media_url"
+              :src="work.featured_media_url"
+              :alt="work.title.rendered"
+            />
+            <h3 v-html="work.title.rendered"></h3>
+            <p v-html="work.content.rendered"></p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="skill">
+        <h2 class="skill-headline" id="skill">Skill</h2>
+        <ul class="skill-items">
+          <li class="skill-item" v-for="skill in skills" :key="skill.id">
+            <a v-if="skill.skill_link" :href="skill.skill_link" target="_blank" rel="noopener noreferrer">
+              <img
+                v-if="skill.featured_media_url"
+                :src="skill.featured_media_url"
+                :alt="skill.title?.rendered || ''"
+                style="width: 100px; height: auto; margin-bottom: 10px"
+              />
+            </a>
+            <img
+              v-else-if="skill.featured_media_url"
+              :src="skill.featured_media_url"
+              :alt="skill.title?.rendered || ''"
+              style="width: 100px; height: auto; margin-bottom: 10px"
+            />
+            <h3 v-html="skill.title?.rendered || ''"></h3>
+            <p v-html="skill.content?.rendered || ''"></p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="about">
+        <h2 class="about-headline" id="about">About</h2>
+        <div class="about-items">
+          <img src="img/me.jpg" alt="me" id="aboutImage" />
+          <div class="about-caption" id="about-caption">
+            Web制作を中心に、UI設計やフロントエンド開発を行っている静岡県浜松市在住の中村です。<br />
+            HTML/CSSやJavaScript、Vue.jsなどを用いたコーディングを得意とし、FigmaやPhotoshopを使ったデザイン制作にも対応可能です。<br />「見る人に伝わる・使う人にとって心地よい」を大切に、丁寧なものづくりを心がけています。
+          </div>
+        </div>
+      </section>
+
+      <section class="contact" id="contact">
+        <h1 class="contact-headline">Contact</h1>
+        <div class="wrapper">
+          <form
+            action="confirm.php"
+            method="post"
+            id="contact_form"
+            class="h-adr"
+          >
+            <span class="p-country-name" style="display: none">Japan</span>
+            <div class="sp100 of_x">
+              <table id="contactform_table" class="width81 mb_30">
+                <tr>
+                  <th><label for="name">名前</label></th>
+                  <td>
+                    <input name="name" type="text" id="name" required />
+                  </td>
+                </tr>
+                <tr>
+                  <th><label for="email">メール</label></th>
+                  <td>
+                    <input
+                      name="email"
+                      type="email"
+                      id="email"
+                      size="45"
+                      required
+                    />
+                  </td>
+                </tr>
+
+                <tr>
+                  <th><label for="tel">電話番号</label></th>
+                  <td>
+                    <input name="tel" type="tel" id="tel" required />
+                  </td>
+                </tr>
+                <tr>
+                  <th><label for="age">年齢</label></th>
+                  <td>
+                    <div class="select-group">
+                      <select name="age" id="age">
+                        <option value="" selected>-選択してください-</option>
+                        <option value="10代">10代</option>
+                        <option value="20代">20代</option>
+                        <option value="30代">30代</option>
+                        <option value="40代">40代</option>
+                        <option value="50代">50代</option>
+                        <option value="60代以上">60代以上</option>
+                      </select>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>希望連絡方法</th>
+
+                  <td class="radio">
+                    <div class="radio-group">
+                      <input
+                        type="radio"
+                        name="contact_means"
+                        value="電話"
+                        id="contact_tel"
+                        required
+                      /><label for="contact_tel">電話</label>
+                      <input
+                        type="radio"
+                        name="contact_means"
+                        value="メール"
+                        id="contact_email"
+                        required
+                      /><label for="contact_email">メール</label>
+                      <input
+                        type="radio"
+                        name="contact_means"
+                        value="希望なし"
+                        id="contact_others"
+                        required
+                      /><label for="contact_others">希望なし</label>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th><label for="comment">メッセージ</label></th>
+                  <td>
+                    <textarea
+                      name="comment"
+                      cols="70"
+                      rows="10"
+                      id="comment"
+                      required
+                    ></textarea>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <input
+                      type="submit"
+                      name="Submit"
+                      value="送信"
+                      id="submit"
+                      class="form_btn"
+                    />
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p class="footer-paragraph">&#169;Nakamura</p>
+      </footer>
+    </div>
+    <div id="particles-js"></div>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+    <script src="js/particles.js"></script>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
